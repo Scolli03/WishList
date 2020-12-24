@@ -1,7 +1,114 @@
 @page "/"
+@using System.Net.Http;
+@using Newtonsoft.Json;
+@using WishList.Data;
 
-<h1>Hello, world!</h1>
+<h1 class=centered>Wish List</h1>
 
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <div class=centered>
+                <button class=btn-primary @onclick=GetData>Search</button>
+                <input @bind=searchTitle/>
+        </div>
+
+        @if (wish != null)
+        {
+            
+
+            <div  class="centered img">
+                <img src=@wish.PosterURL/>
+            </div>
+
+            <div class="flex-container" style="justify-content:center;">
+                <button class="add-to-btn">Add to Wishlist</button>
+            </div>
+
+            <div class="flex-container">
+                <div>
+                    <h2>Title:</h2>
+                </div>
+                <div>
+                    <h2 class="movie-text">@wish.Title</h2>
+                </div>
+            </div>
+
+            <div class="flex-container">
+                <div>
+                    <h2>Year:</h2>
+                </div>
+                <div>
+                    <h2 class="movie-text">@wish.Year</h2>
+                </div>
+            </div>
+
+            @if(wish.Type == "series")
+            {
+                <div class="flex-container">
+                    <div>
+                        <h2>Total Season:</h2>
+                    </div>
+                    <div>
+                        <h2 class="movie-text">@wish.totalSeasons</h2>
+                    </div>
+                </div>
+            }            
+
+            <div class="flex-container">
+                <div>
+                    <h2>Plot:</h2>
+                </div>
+                <div>
+                    <h2 class="movie-text">@wish.Plot</h2>
+                </div>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        This content is displayed if the user is Not Authorized
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+
+
+
+
+<p>@response</p>
+
+
+
+@code{
+    private static readonly HttpClient client = new HttpClient();
+    private string searchTitle = String.Empty;
+    private string response = string.Empty;
+    public Wish wish;
+    private async Task GetData()
+    {
+        response = await client.GetStringAsync($"http://www.omdbapi.com/?t={searchTitle.Replace(" ", "%20")}&apikey=32736ada&");
+        dynamic obj = JsonConvert.DeserializeObject<dynamic>(response);
+        wish = new Wish()
+        {
+            Title = obj.Title,
+            Year = obj.Year,
+            Plot = obj.Plot,
+            PosterURL = obj.Poster,
+            Type = obj.Type,
+            imdbID = obj.imdbID
+        };
+
+        if(obj.Type == "series")
+        {
+            wish.totalSeasons = obj.totalSeasons;
+        }
+
+
+    }
+
+}
+
+

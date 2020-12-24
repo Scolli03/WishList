@@ -4,6 +4,31 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+tr:hover {
+    background-color:lightgray;
+}
+
+.add-to-btn{
+    background-color: #26b050;
+    color: #d6d5d5;
+}
+.centered{
+    text-align: center;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.movie-text{
+    margin-left: 15px;
+}
+
+.img{
+    margin: 15px;
+}
+
 a, .btn-link {
     color: #0366d6;
 }

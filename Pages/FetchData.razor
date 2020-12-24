@@ -1,46 +1,55 @@
 ﻿@page "/fetchdata"
+@using Microsoft.AspNetCore.Identity;
+@inject WishListService wishListService
+@inject UserManager<IdentityUser> _UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-@using WishList.Data
-@inject WeatherForecastService ForecastService
+<h1>My Wishlist</h1>
 
-<h1>Weather forecast</h1>
-
-<p>This component demonstrates fetching data from a service.</p>
-
-@if (forecasts == null)
+@if (wishes == null)
 {
-    <p><em>Loading...</em></p>
+        <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <th>Title</th>
+                    <th>Year</th>
+                    <th>Type</th>
+                    <th>Season</th>
                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var wish in wishes)
+            {
+                        <tr>
+                            <td>@wish.Title</td>
+                            <td>@wish.Year</td>
+                            <td>@wish.Type</td>
+                            <td>@wish.Season</td>
+                        </tr>
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    System.Security.Claims.ClaimsPrincipal CurrentUser;    
+    private List<Wish> wishes;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        // Get the current logged in user
+        CurrentUser = (await authenticationStateTask).User;
+
+        
+
+        Console.WriteLine(CurrentUser.Claims);
+
+        wishes = await wishListService.GetWishAsync();
     }
 }

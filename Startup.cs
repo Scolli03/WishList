@@ -35,6 +35,12 @@ namespace WishList
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddDbContext<WishListDBContext>(options =>
+                options.UseSqlite(
+                    "Data Source = Wishes.db"
+                ));
+            services.AddScoped<WishListService>();
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
